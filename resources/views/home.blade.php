@@ -4,3 +4,4 @@
     <input type="text" name="text" required/>
     <input type="submit" value="Generate">
 </form>
+<?= $barcode
