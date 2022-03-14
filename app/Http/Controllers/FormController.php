@@ -8,23 +8,34 @@ use App\Models\Barcode;
 class FormController
 {
     public function displayForm()
-    {;
-        return view('home', ['barcode'=> $this->show(1)]);
+    {
+        return view('home');
     }
 
     public function save($text, $barcode_image)
     {
-        $barcode = new Barcode();
-        $barcode->text = $text;
-        $barcode->barcode = $barcode_image;
-        $barcode->save();
+        $barcode_record = new Barcode();
+        $barcode_record->text = $text;
+        $barcode_record->barcode = $barcode_image;
+        $barcode_record->save();
+
+        return $barcode_record->id;
     }
 
     public function show($id)
     {
-        $barcode= new Barcode();
-        $barcode_record = $barcode->find($id);
-        return $barcode_record->barcode;
+        $barcode = new Barcode();
+
+        return $barcode->find($id);
+    }
+
+    public function showCreated($id)
+    {
+        $barcode_record = $this->show($id);
+        $barcode_image = $barcode_record->barcode;
+        $barcode_text = $barcode_record->text;
+
+        return view('barcode', ['barcode'=>$barcode_image, 'text'=>$barcode_text]);
     }
 
     public function handleForm(Request $request)
@@ -32,11 +43,8 @@ class FormController
         $text = htmlspecialchars($request->post('text'));
         $generator = new BarcodeGeneratorPNG();
         $barcode_image =  '<img src="data:image/webp;base64,' . base64_encode($generator->getBarcode($text, $generator::TYPE_CODE_128)) . '">';
+        $id = $this->save($text, $barcode_image);
 
-        $this->save($text, $barcode_image);
-
-
-        //return view('barcode', ['barcode'=>$barcode_image, 'text'=>$text]);
-
+        return redirect()->route('barcode',['id' => $id]);
     }
 }

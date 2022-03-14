@@ -1,0 +1,7 @@
+.container {
+    font-family: Calibri;
+    font-size: 2em;
+}
+input, button {
+    font-size: inherit;
+}
